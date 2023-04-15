@@ -1,3 +1,5 @@
+import LoginSection from "@/components/login/LoginSection";
+import NavBar from "@/components/nav/NavBar";
 import React from "react";
 
 type Props = {};
@@ -5,8 +7,8 @@ type Props = {};
 const Login = (props: Props) => {
   return (
     <div>
-      <h1 className="">Login</h1>
-      <p> </p>
+      <NavBar />
+      <LoginSection />
     </div>
   );
 };
