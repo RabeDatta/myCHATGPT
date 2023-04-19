@@ -3,12 +3,14 @@ import dotenv from "dotenv";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
+import connectDB from "./config/db";
 
 dotenv.config();
-const PORT = process.env.PORT ?? 5000;
 
 import authRoutes from "./routes/auth";
 import openAiRoutes from "./routes/openAI";
+
+const PORT = process.env.PORT ?? 5000;
 
 const app = express();
 app.use(express.json());
@@ -24,6 +26,7 @@ app.use(
 
 app.use(morgan("common"));
 
+connectDB();
 app.use("/api/auth", authRoutes);
 app.use("/api/openAI", openAiRoutes);
 

@@ -25,6 +25,8 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
+// name of the cluster
 const db = mongoose.connection.useDb("mychatgpt");
+// name of the model and and collection
 const User = db.model("User", UserSchema, "users");
 export default User;

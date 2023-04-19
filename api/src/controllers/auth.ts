@@ -6,7 +6,13 @@ import User from "../models/User";
 const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
+    console.log({
+      username,
+      email,
+      password,
+    });
     const exisitingEmail = await User.findOne({ email });
+    console.log(exisitingEmail);
     if (exisitingEmail) {
       return res.status(400).json({ error: "Email already exists" });
     }
@@ -54,9 +60,14 @@ const login = async (req: Request, res: Response) => {
 };
 
 const logout = async (req: Request, res: Response) => {
+  const cookies = req.cookies;
+  if (!cookies?.access_token)
+    return res.status(204).json({ msg: "User not logged in." });
+
   try {
     res
       .clearCookie("access_token", {
+        httpOnly: true,
         sameSite: "none",
         secure: true,
       })

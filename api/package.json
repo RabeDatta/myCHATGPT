@@ -15,6 +15,7 @@
     "typescript": "^5.0.4"
   },
   "scripts": {
+    "watch": "tsc -w",
     "bulid": "tsc -w",
     "start": "nodemon --exec ts-node src/index.ts"
   },

@@ -4,10 +4,10 @@ import { verifyCookieToken } from "../middleware/auth";
 
 const router = express.Router();
 
-router.post("/register", verifyCookieToken, register);
+router.post("/register", register);
 
-router.post("/login", verifyCookieToken, login);
+router.post("/login", login);
 
-router.post("/logout", verifyCookieToken, logout);
+router.post("/logout", logout);
 
 export default router;

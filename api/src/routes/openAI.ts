@@ -11,10 +11,10 @@ import { verifyCookieToken } from "../middleware/auth";
 const router = express.Router();
 
 //route
-router.post("/summary", verifyCookieToken, summary);
-router.post("/paragraph", verifyCookieToken, paragraph);
-router.post("/chatbot", verifyCookieToken, chatbot);
-router.post("/js-converter", verifyCookieToken, jsconverter);
-router.post("/scifi-image", verifyCookieToken, scifiImage);
+router.post("/summary", summary);
+router.post("/paragraph", paragraph);
+router.post("/chatbot", chatbot);
+router.post("/js-converter", jsconverter);
+router.post("/scifi-image", scifiImage);
 
 export default router;

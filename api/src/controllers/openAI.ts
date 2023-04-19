@@ -5,22 +5,37 @@ import db from "../config/db";
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
 const openai = new OpenAIApi(configuration);
 
 const summary = async (req: Request, res: Response) => {
   try {
-    const { text } = req.body;
+    console.log("HELLLO.............................");
+    const timestamp = new Date().toISOString();
+
+    const { value: paragraph } = req.body;
+    console.log("paragraph", paragraph);
 
     const { data } = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: `Summarize this \n${text}`,
-      max_tokens: 500,
+      prompt: `Summarize this \n${paragraph}`,
+      // prompt: `${paragraph}.\n\nTl;dr`,
       temperature: 0.5,
+      max_tokens: 60,
+      top_p: 1.0,
+      frequency_penalty: 0.0,
+      presence_penalty: 1,
     });
 
     if (data) {
       if (data.choices[0].text) {
-        return res.status(200).json(data.choices[0].text);
+        return res.status(200).json({
+          message: {
+            role: "assistant",
+            content: data.choices[0].text,
+            timestamp,
+          },
+        });
       }
     }
   } catch (err: any) {
