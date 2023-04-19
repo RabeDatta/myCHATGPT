@@ -13,5 +13,4 @@ export type currentUserType = {
   id: string;
   username: string;
   email: string;
-  img: string;
 };

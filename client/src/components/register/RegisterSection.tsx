@@ -2,9 +2,38 @@ import React from "react";
 import { BsRobot } from "react-icons/bs";
 import { HiOutlineLogin } from "react-icons/hi";
 import { GiArchiveRegister } from "react-icons/gi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthState } from "@/context/authContext";
+import { api } from "@/api/apiInstances";
 
 const RegisterSection = () => {
+  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const message = await api.post("/auth/register", {
+        username,
+        email,
+        password,
+      });
+      console.log("message", message);
+
+      setUsername("");
+      setEmail("");
+      setPassword("");
+
+      navigate("/");
+    } catch (e: any) {
+      console.error(e);
+    }
+  };
+
   return (
     <div className="antialiased bg-gradient-to-br from-green-100 to-white">
       <div className="px-6 mx-auto max-w-screen-xl">
@@ -16,7 +45,7 @@ const RegisterSection = () => {
               <h2 className="text-3xl font-bold text-gray-800 text-center mb-5">
                 Register
               </h2>
-              <form action="" className="w-full">
+              <form action="" className="w-full" onSubmit={handleSubmit}>
                 {/* USERNAME INPUT */}
                 <div id="input" className="flex flex-col w-full my-5">
                   <label htmlFor="Username" className="text-gray-500 mb-2">
@@ -24,6 +53,7 @@ const RegisterSection = () => {
                   </label>
                   <input
                     type="text"
+                    onChange={(e) => setUsername(e.target.value)}
                     id="Username"
                     placeholder="Please insert your email"
                     className="appearance-none border-2 border-gray-100 rounded-lg px-4 py-3 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-600 focus:shadow-lg"
@@ -36,6 +66,7 @@ const RegisterSection = () => {
                     Email
                   </label>
                   <input
+                    onChange={(e) => setEmail(e.target.value)}
                     type="text"
                     id="email"
                     placeholder="Please insert your email"
@@ -49,6 +80,7 @@ const RegisterSection = () => {
                     Password
                   </label>
                   <input
+                    onChange={(e) => setPassword(e.target.value)}
                     type="password"
                     id="password"
                     placeholder="Please insert your password"
@@ -59,7 +91,7 @@ const RegisterSection = () => {
                 {/* REGISTER IF YOU DON'T HAVE ACCOUNT */}
                 <div id="button" className="flex flex-col w-full my-5">
                   <button
-                    type="button"
+                    type="submit"
                     className="w-full py-4 bg-green-600 rounded-lg text-green-100"
                   >
                     <div className="flex flex-row items-center justify-center">

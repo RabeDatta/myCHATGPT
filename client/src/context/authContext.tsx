@@ -1,6 +1,7 @@
 import { api } from "@/api/apiInstances";
 import { createContext, useContext, useEffect, useState } from "react";
 import { contextType, currentUserType } from "./contextType";
+import { useNavigate } from "react-router-dom";
 
 //export const AuthContext = createContext<contextType | null>(null);
 export const AuthContext = createContext({} as contextType);
@@ -14,6 +15,8 @@ export const AuthContextProvider = ({
     () => JSON.parse(localStorage.getItem("user") as string) || null
   );
 
+  const navigate = useNavigate();
+
   console.log("currentUser", currentUser);
 
   const login = async (loginData: { email: string; password: string }) => {
@@ -25,6 +28,7 @@ export const AuthContextProvider = ({
   const logout = async () => {
     await api.post("/auth/logout");
     setCurrentUser(null);
+    navigate("/");
   };
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AuthState } from "./context/authContext";
+import Summary from "./pages/Summary";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -39,6 +40,14 @@ function App() {
         <Route
           path="/register"
           element={!currentUser ? <Register /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/summary"
+          element={
+            <ProtectedRoute>
+              <Summary />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </div>
