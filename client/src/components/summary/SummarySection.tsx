@@ -8,11 +8,14 @@ import { cn } from "@/utils/classNames";
 import { parseDate, timeSince } from "@/utils/relativeDates";
 import TimeAgo from "@/shared/TimeAgo";
 import { IoPersonCircleOutline } from "react-icons/io5";
+import { MdZoomInMap, MdZoomOutMap } from "react-icons/md";
 
 function SummarySection() {
   const { currentUser } = AuthState();
 
   const [value, setValue] = React.useState("");
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const MAX_TEXT_VALUE = 1200;
 
   // const timestamp = new Date().toLocaleTimeString("en-US", {
   //   hour: "numeric",
@@ -71,8 +74,6 @@ function SummarySection() {
           <p className="text-xl text-gray-500 pt-2">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
             cupiditate numquam incidunt quia tempore, doloribus delectus vel.
-            Soluta facere nemo harum est totam iure labore modi blanditiis
-            neque, sunt sint.
           </p>
         </div>
         {/* MESSAGE BOX & TEXTAREA */}
@@ -137,24 +138,48 @@ function SummarySection() {
             })}
           </div>
           {/* TEXTAREA SECTION  */}
-          <div className="bg-gray-200/60 p-4 relative">
+          <div className="bg-gray-200/60 p-4 relative flex flex-col">
             <textarea
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              className="flex items-center min-h-[12.5rem] w-full rounded 
-              px-3 py-2 text-lg relative outline-none"
+              className={cn(
+                `flex items-center min-h-[12.5rem] w-full rounded 
+              px-3 py-2 pr-7 pt-4 text-lg relative outline-none resize-none transition-[min-height] duration-400`,
+                isExpanded ? "min-h-[30.5rem]" : "min-h-[10.5rem]",
+                value.length === MAX_TEXT_VALUE
+                  ? "border-2 border-red-600"
+                  : null
+              )}
               placeholder="Type your Paragraph here..."
               maxLength={1200}
             />
-            <button
-              onClick={handleClick}
-              className="absolute bottom-6 right-9 border-2 bg-white z-10
-             py-1 px-5 rounded-lg border-green-300 text-green-300
-            hover:bg-green-300 hover:text-white transition-all"
+
+            <span
+              className="absolute right-8 top-5 cursor-pointer hover:bg-gray-200 p-2 rounded-full"
+              onClick={() => setIsExpanded(!isExpanded)}
             >
-              {" "}
-              Send
-            </button>
+              {isExpanded ? <MdZoomOutMap /> : <MdZoomInMap />}
+            </span>
+
+            {/* submit btn */}
+            <div className="flex justify-between items-center  mt-2">
+              <span
+                className={cn(
+                  value.length === MAX_TEXT_VALUE ? "text-red-600" : null
+                )}
+              >
+                {value.length} / {MAX_TEXT_VALUE}
+              </span>
+              <button
+                onClick={handleClick}
+                className="border-2 bg-white z-10
+             py-1 px-5 rounded-lg border-green-300 text-green-300  
+            hover:bg-green-300 hover:text-white transition-all"
+              >
+                {" "}
+                Send
+              </button>
+            </div>
           </div>
         </div>
       </div>
