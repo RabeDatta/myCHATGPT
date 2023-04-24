@@ -29,7 +29,7 @@ function SummarySection() {
       role: "assistant",
       content: `Hello${
         currentUser ? `, ${currentUser.username}` : ""
-      }! Welcome to the summarization bot. I can help you summarize any text you like. Simply enter your text and I'll provide you with a concise summary.`,
+      }! Welcome to the summarization chat. I can help you summarize any text you like. Simply enter your text and I'll provide you with a concise summary.`,
       timestamp,
     },
     {
@@ -43,9 +43,7 @@ function SummarySection() {
 
   console.log(conversation);
 
-  const handleClick = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleClick = async (e: React.MouseEventHandler<HTMLButtonElement>) => {
     try {
       setLoading(true);
       setConversation((prev) => [
@@ -89,6 +87,7 @@ function SummarySection() {
               console.log("current Date: ", detail.timestamp);
 
               return isUser ? (
+                // USER MESSAGE
                 <div key={index}>
                   <div className="flex w-full mt-2 space-x-3 max-w-xs ml-auto justify-end">
                     <div>
@@ -110,6 +109,7 @@ function SummarySection() {
                   </div>
                 </div>
               ) : (
+                // ASSISTANT MESSAGE
                 <div key={index}>
                   <div className="flex w-full mt-2 space-x-3 max-w-xs">
                     <div className="flex-shrink-0 h-10 w-10 rounded-full relative">
