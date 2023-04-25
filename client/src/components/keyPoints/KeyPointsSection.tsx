@@ -9,15 +9,17 @@ import { parseDate, timeSince } from "@/utils/relativeDates";
 import TimeAgo from "@/shared/TimeAgo";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdZoomInMap, MdZoomOutMap } from "react-icons/md";
+import { formatData } from "./formatContent";
+import DOMPurify from "dompurify";
 
-function SummarySection() {
+function KeyPointsSection() {
   const { currentUser } = AuthState();
 
   const [value, setValue] = React.useState("");
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [assistantTyping, setAssistantTyping] = React.useState(false);
 
-  const MAX_TEXT_VALUE = 1200;
+  const MAX_TEXT_VALUE = 120;
 
   // const timestamp = new Date().toLocaleTimeString("en-US", {
   //   hour: "numeric",
@@ -34,17 +36,17 @@ function SummarySection() {
       role: "assistant",
       content: `Hello${
         currentUser ? `, ${currentUser.username}` : ""
-      }! Welcome to the summarization chat. I can help you summarize any text you like. Simply enter your text and I'll provide you with a concise summary.`,
+      }! I help you to generate keys points about topic!`,
       timestamp,
     },
     {
       role: "assistant",
-      content: "Please enter the text you'd like me to summarize: ",
+      content: "Please enter a topic you like me to genereate key points : ",
       timestamp,
     },
   ]);
 
-  console.log(conversation);
+  console.log("conversation", conversation);
 
   const handleClick = async (e: React.MouseEventHandler<HTMLButtonElement>) => {
     try {
@@ -53,13 +55,15 @@ function SummarySection() {
         { role: "user", content: value, timestamp },
       ]);
       setAssistantTyping(true); // Set assistant typing status to true
-      const { data } = await api.post("/openAI/summary", { value });
+      const { data } = await api.post("/openAI/studyNotes", { value });
       setValue("");
 
       // Simulate typing delay using setTimeout
       setTimeout(() => {
         setAssistantTyping(false);
-        setConversation((prev) => [...prev, data.message]);
+        setConversation((prev) => {
+          return formatData([...prev, data.message]);
+        });
       }, 1000 * Math.random() + 300);
     } catch (e: any) {
       console.log(e);
@@ -72,7 +76,7 @@ function SummarySection() {
         {/* HEADER */}
         <div>
           <h1 className="text-4xl text-gray-800 font-bold flex gap-2 items-center">
-            Text summary generator
+            Key Points Generator
           </h1>
           <p className="text-xl text-gray-500 pt-2">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
@@ -89,6 +93,9 @@ function SummarySection() {
             {conversation.map((detail, index) => {
               const isUser = detail.role === "user";
               console.log("current Date: ", detail.timestamp);
+              const sanitizedData = () => ({
+                __html: DOMPurify.sanitize(detail.content),
+              });
 
               return isUser ? (
                 // USER MESSAGE
@@ -117,7 +124,7 @@ function SummarySection() {
               ) : (
                 // ASSISTANT MESSAGE
                 <div key={index}>
-                  <div className="flex w-full mt-2 space-x-3 max-w-xs">
+                  <div className="flex w-full mt-2 space-x-3 max-w-md">
                     {/* PROFILE PIC */}
                     <div className="flex-shrink-0 h-10 w-10 rounded-full relative">
                       <div className="absolute w-full h-full top-0 left-1">
@@ -127,7 +134,12 @@ function SummarySection() {
                     {/* MESSAGE */}
                     <div>
                       <div className="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">
-                        <p className="text-sm">{detail.content}</p>
+                        {/* <p className="text-sm">{detail.content}</p> */}
+                        {detail.listContent ? (
+                          <ol dangerouslySetInnerHTML={sanitizedData()} />
+                        ) : (
+                          <p className="text-sm">{detail.content}</p>
+                        )}
                       </div>
 
                       <div className="flex py-1 items-end justify-start gap-2 w-full">
@@ -172,13 +184,13 @@ function SummarySection() {
               className={cn(
                 `flex items-center min-h-[12.5rem] w-full rounded 
               px-3 py-2 pr-7 pt-4 text-lg relative outline-none resize-none transition-[min-height] duration-400`,
-                isExpanded ? "min-h-[30.5rem]" : "min-h-[10.5rem]",
+                isExpanded ? "min-h-[8rem]" : "min-h-[5rem]",
                 value.length === MAX_TEXT_VALUE
                   ? "border-2 border-red-600"
                   : null
               )}
-              placeholder="Type your Paragraph here..."
-              maxLength={1200}
+              placeholder="Type your Topic here..."
+              maxLength={MAX_TEXT_VALUE}
             />
 
             {/* EXPAND ICON */}
@@ -218,4 +230,4 @@ function SummarySection() {
   );
 }
 
-export default SummarySection;
+export default KeyPointsSection;

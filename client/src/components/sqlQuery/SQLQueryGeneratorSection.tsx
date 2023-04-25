@@ -9,15 +9,16 @@ import { parseDate, timeSince } from "@/utils/relativeDates";
 import TimeAgo from "@/shared/TimeAgo";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdZoomInMap, MdZoomOutMap } from "react-icons/md";
+import DisplaySQLCode from "./DisplaySQLCode";
 
-function SummarySection() {
+function SQLQueryGeneratorSection() {
   const { currentUser } = AuthState();
 
   const [value, setValue] = React.useState("");
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [assistantTyping, setAssistantTyping] = React.useState(false);
 
-  const MAX_TEXT_VALUE = 1200;
+  const MAX_TEXT_VALUE = 120;
 
   // const timestamp = new Date().toLocaleTimeString("en-US", {
   //   hour: "numeric",
@@ -34,17 +35,17 @@ function SummarySection() {
       role: "assistant",
       content: `Hello${
         currentUser ? `, ${currentUser.username}` : ""
-      }! Welcome to the summarization chat. I can help you summarize any text you like. Simply enter your text and I'll provide you with a concise summary.`,
+      }! Welcome to SQL query generator.`,
       timestamp,
     },
     {
       role: "assistant",
-      content: "Please enter the text you'd like me to summarize: ",
+      content: "Please enter the text you'd like to generator SQL query for: ",
       timestamp,
     },
   ]);
 
-  console.log(conversation);
+  console.log("conversation", conversation);
 
   const handleClick = async (e: React.MouseEventHandler<HTMLButtonElement>) => {
     try {
@@ -53,7 +54,7 @@ function SummarySection() {
         { role: "user", content: value, timestamp },
       ]);
       setAssistantTyping(true); // Set assistant typing status to true
-      const { data } = await api.post("/openAI/summary", { value });
+      const { data } = await api.post("/openAI/sql-query", { value });
       setValue("");
 
       // Simulate typing delay using setTimeout
@@ -72,7 +73,7 @@ function SummarySection() {
         {/* HEADER */}
         <div>
           <h1 className="text-4xl text-gray-800 font-bold flex gap-2 items-center">
-            Text summary generator
+            SQL Query Generator
           </h1>
           <p className="text-xl text-gray-500 pt-2">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
@@ -117,27 +118,34 @@ function SummarySection() {
               ) : (
                 // ASSISTANT MESSAGE
                 <div key={index}>
-                  <div className="flex w-full mt-2 space-x-3 max-w-xs">
+                  <div className="flex w-full mt-2 space-x-3 max-w-full">
                     {/* PROFILE PIC */}
                     <div className="flex-shrink-0 h-10 w-10 rounded-full relative">
                       <div className="absolute w-full h-full top-0 left-1">
                         <BsRobot className="text-3xl text-gray-800" />
                       </div>
                     </div>
-                    {/* MESSAGE */}
-                    <div>
-                      <div className="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">
-                        <p className="text-sm">{detail.content}</p>
+                    {/* MESSAGE & CODE CONTAINER */}
+                    <div className="w-full flex flex-col gap-4">
+                      {/* MESSAGE */}
+                      <div className=" sm:w-[90%]">
+                        <div className="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">
+                          <p className="text-sm">{detail.content}</p>
+                        </div>
+                        <div className="flex py-1 items-end justify-start gap-2 w-full">
+                          <span className="text-xs text-gray-500 leading-none">
+                            BrainyBot •
+                          </span>
+                          <span className="text-xs text-gray-500 leading-none">
+                            <TimeAgo timestamp={detail.timestamp} />
+                          </span>
+                        </div>
                       </div>
-
-                      <div className="flex py-1 items-end justify-start gap-2 w-full">
-                        <span className="text-xs text-gray-500 leading-none">
-                          BrainyBot •
-                        </span>
-                        <span className="text-xs text-gray-500 leading-none">
-                          <TimeAgo timestamp={detail.timestamp} />
-                        </span>
-                      </div>
+                      {/* CODE DISPLAY */}
+                      <DisplaySQLCode
+                        timestamp={detail.timestamp}
+                        content={detail.content}
+                      />
                     </div>
                   </div>
                 </div>
@@ -172,7 +180,7 @@ function SummarySection() {
               className={cn(
                 `flex items-center min-h-[12.5rem] w-full rounded 
               px-3 py-2 pr-7 pt-4 text-lg relative outline-none resize-none transition-[min-height] duration-400`,
-                isExpanded ? "min-h-[30.5rem]" : "min-h-[10.5rem]",
+                isExpanded ? "min-h-[10rem]" : "min-h-[5rem]",
                 value.length === MAX_TEXT_VALUE
                   ? "border-2 border-red-600"
                   : null
@@ -218,4 +226,4 @@ function SummarySection() {
   );
 }
 
-export default SummarySection;
+export default SQLQueryGeneratorSection;

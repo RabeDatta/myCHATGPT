@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AuthState } from "./context/authContext";
 import Summary from "./pages/Summary";
+import KeyPoints from "./pages/KeyPoints";
+import SQLQueryGenerator from "./pages/SQLQueryGenerator";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -46,6 +48,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Summary />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/keypoints"
+          element={
+            <ProtectedRoute>
+              <KeyPoints />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/sql-query"
+          element={
+            <ProtectedRoute>
+              <SQLQueryGenerator />
             </ProtectedRoute>
           }
         />
