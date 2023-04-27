@@ -3,14 +3,15 @@ import React, { useEffect } from "react";
 import { BsRobot } from "react-icons/bs";
 import { AiOutlineSend } from "react-icons/ai";
 import { api } from "@/api/apiInstances";
-import TypingAnimation from "@/shared/TypingAnimation";
+import TypingAnimation from "@/components/shared/TypingAnimation";
 import { cn } from "@/utils/classNames";
 import { parseDate, timeSince } from "@/utils/relativeDates";
-import TimeAgo from "@/shared/TimeAgo";
+import TimeAgo from "@/components/shared/TimeAgo";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdZoomInMap, MdZoomOutMap } from "react-icons/md";
 import { formatData } from "./formatContent";
 import DOMPurify from "dompurify";
+import ChatHeader from "../shared/ChatHeader";
 
 function KeyPointsSection() {
   const { currentUser } = AuthState();
@@ -86,8 +87,9 @@ function KeyPointsSection() {
         {/* MESSAGE BOX & TEXTAREA */}
         <div
           className="flex flex-col flex-grow w-full sm:max-w-3xl shadow-xl 
-    rounded-lg overflow-hidden pt-4 bg-white min-h-[660px] h-auto"
+    rounded-lg overflow-hidden   bg-white min-h-[660px] h-auto"
         >
+          <ChatHeader botName="Study Points Bot" />
           {/* DISPLAYED MESSAGE SECTION */}
           <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
             {conversation.map((detail, index) => {
@@ -144,7 +146,7 @@ function KeyPointsSection() {
 
                       <div className="flex py-1 items-end justify-start gap-2 w-full">
                         <span className="text-xs text-gray-500 leading-none">
-                          BrainyBot •
+                          BuddhiBot •
                         </span>
                         <span className="text-xs text-gray-500 leading-none">
                           <TimeAgo timestamp={detail.timestamp} />

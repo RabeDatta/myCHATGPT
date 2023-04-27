@@ -18,7 +18,7 @@ const NavBar = () => {
             <span>
               <BsRobot className="text-1xl  text-gray-800" />{" "}
             </span>
-            BrainyChat
+            BuddhiChat
           </h1>
         </Link>
 

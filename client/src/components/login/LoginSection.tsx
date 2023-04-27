@@ -36,7 +36,7 @@ const LoginSection = () => {
             <div className="">
               <BsRobot className="text-6xl text-gray-800" />
             </div>
-            <h1 className="text-5xl text-gray-800 font-bold"> BrainyChat </h1>
+            <h1 className="text-5xl text-gray-800 font-bold"> BuddhiChat </h1>
             <p className=" mx-auto md:mx-0 text-gray-500">
               Smart AI Chat for Instant Answers
             </p>

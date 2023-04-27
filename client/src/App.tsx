@@ -7,6 +7,7 @@ import { AuthState } from "./context/authContext";
 import Summary from "./pages/Summary";
 import KeyPoints from "./pages/KeyPoints";
 import SQLQueryGenerator from "./pages/SQLQueryGenerator";
+import JSConverter from "./pages/JSConverter";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -64,6 +65,14 @@ function App() {
           element={
             <ProtectedRoute>
               <SQLQueryGenerator />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/js-converter"
+          element={
+            <ProtectedRoute>
+              <JSConverter />
             </ProtectedRoute>
           }
         />

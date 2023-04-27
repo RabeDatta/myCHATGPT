@@ -15,25 +15,25 @@ import { Link } from "react-router-dom";
 import { GoPrimitiveDot } from "react-icons/go";
 import ChatHeader from "../shared/ChatHeader";
 
-function SQLQueryGeneratorSection() {
+function JSConverterSection() {
   const { currentUser } = AuthState();
 
   const [value, setValue] = React.useState("");
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [assistantTyping, setAssistantTyping] = React.useState(false);
 
-  const MAX_TEXT_VALUE = 80;
-
-  // const timestamp = new Date().toLocaleTimeString("en-US", {
-  //   hour: "numeric",
-  //   minute: "numeric",
-  //   hour12: true,
-  // });
+  const MAX_TEXT_VALUE = 600;
 
   const timestamp = new Date().toISOString();
 
   const [conversation, setConversation] = React.useState<
-    { role: string; content: string; timestamp: string }[]
+    {
+      role: string;
+      content: string;
+      timestamp: string;
+      jsCode?: null | string;
+      explanation?: null | string;
+    }[]
   >([
     {
       role: "assistant",
@@ -51,14 +51,14 @@ function SQLQueryGeneratorSection() {
 
   console.log("conversation", conversation);
 
-  const handleClick = async (e: React.MouseEventHandler<HTMLButtonElement>) => {
+  const handleClick = async () => {
     try {
       setConversation((prev) => [
         ...prev,
         { role: "user", content: value, timestamp },
       ]);
       setAssistantTyping(true); // Set assistant typing status to true
-      const { data } = await api.post("/openAI/sql-query", { value });
+      const { data } = await api.post("/openAI/js-converter", { value });
       setValue("");
 
       // Simulate typing delay using setTimeout
@@ -77,7 +77,7 @@ function SQLQueryGeneratorSection() {
         {/* HEADER */}
         <div>
           <h1 className="text-4xl text-gray-800 font-bold flex gap-2 items-center">
-            SQL Query Generator
+            JS Converter
           </h1>
           <p className="text-xl text-gray-500 pt-2">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
@@ -87,10 +87,10 @@ function SQLQueryGeneratorSection() {
         {/* MESSAGE BOX & TEXTAREA */}
         <div
           className="flex flex-col flex-grow w-full sm:max-w-3xl shadow-xl 
-    rounded-lg overflow-hidden bg-white min-h-[660px] h-auto"
+      rounded-lg overflow-hidden bg-white min-h-[660px] h-auto"
         >
           {/* CHAT HEADER */}
-          <ChatHeader botName="Buddhi SQL Bot" />
+          <ChatHeader botName="JS Converter Bot" />
 
           {/* DISPLAYED MESSAGE SECTION */}
           <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
@@ -133,18 +133,30 @@ function SQLQueryGeneratorSection() {
                       </div>
                     </div>
                     {/* MESSAGE & CODE CONTAINER */}
-                    <div className="w-full flex flex-col gap-4">
+                    <div className="w-full flex flex-col gap-2">
                       {/* MESSAGE */}
-                      {detail.hasSQLCode ? (
+                      {!detail.jsCode &&
+                        !detail.explanation &&
+                        detail.content && (
+                          <BotMessage
+                            timestamp={detail.timestamp}
+                            content={detail.content}
+                          />
+                        )}
+
+                      {detail.jsCode && (
                         <DisplayCode
-                          hasJSCode={false}
+                          hasJSCode
+                          hasExplanation
                           timestamp={detail.timestamp}
-                          content={detail.content}
+                          content={detail.jsCode}
                         />
-                      ) : (
+                      )}
+
+                      {detail.explanation && (
                         <BotMessage
                           timestamp={detail.timestamp}
-                          content={detail.content}
+                          content={detail.explanation}
                         />
                       )}
                       {/* CODE DISPLAY */}
@@ -181,14 +193,14 @@ function SQLQueryGeneratorSection() {
               onChange={(e) => setValue(e.target.value)}
               className={cn(
                 `flex items-center min-h-[12.5rem] w-full rounded 
-              px-3 py-2 pr-7 pt-4 text-lg relative outline-none resize-none transition-[min-height] duration-400`,
+                px-3 py-2 pr-7 pt-4 text-lg relative outline-none resize-none transition-[min-height] duration-400`,
                 isExpanded ? "min-h-[8rem]" : "min-h-[4rem]",
                 value.length === MAX_TEXT_VALUE
                   ? "border-2 border-red-600"
                   : null
               )}
               placeholder="Type your Paragraph here..."
-              maxLength={1200}
+              maxLength={MAX_TEXT_VALUE}
             />
 
             {/* EXPAND ICON */}
@@ -213,8 +225,8 @@ function SQLQueryGeneratorSection() {
                 onClick={handleClick}
                 className={cn(
                   `border-2 bg-white z-10
-                  py-1 px-5 rounded-lg border-green-300 text-green-300  
-                 hover:bg-green-300 hover:text-white transition-all`,
+                    py-1 px-5 rounded-lg border-green-300 text-green-300  
+                   hover:bg-green-300 hover:text-white transition-all`,
                   assistantTyping ? "cursor-not-allowed " : null
                 )}
               >
@@ -228,4 +240,4 @@ function SQLQueryGeneratorSection() {
   );
 }
 
-export default SQLQueryGeneratorSection;
+export default JSConverterSection;

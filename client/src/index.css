@@ -62,7 +62,7 @@
 /* FIREFOX: SCROLLBAR */
 div.code-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.5);
+  scrollbar-color: rgb(170, 170, 170);
 }
 
 /* CHROME AND SAFARI : SCROLLBAR */
@@ -73,6 +73,6 @@ div.code-scrollbar::-webkit-scrollbar {
 
 div.code-scrollbar::-webkit-scrollbar-thumb {
   border-radius: 4px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(170, 170, 170);
   /* -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5); */
 }
