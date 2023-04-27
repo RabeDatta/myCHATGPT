@@ -110,7 +110,7 @@ const Options = () => {
           </Link>
           {/* IMAGE */}
           <Link
-            to="/"
+            to="/scifi-image"
             className="group relative flex flex-col gap-1 rounded-lg border-[3px] border-gray-50 p-4 pt-6 hover:border-gray-100 dark:border-gray-800 hover:dark:border-gray-600 md:p-6"
           >
             <h2 className="text-green-500 text-2xl font-bold tracking-tight group-hover:underline">

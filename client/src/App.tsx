@@ -8,6 +8,7 @@ import Summary from "./pages/Summary";
 import KeyPoints from "./pages/KeyPoints";
 import SQLQueryGenerator from "./pages/SQLQueryGenerator";
 import JSConverter from "./pages/JSConverter";
+import SciFiImage from "./pages/SciFiImage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -73,6 +74,14 @@ function App() {
           element={
             <ProtectedRoute>
               <JSConverter />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/scifi-image"
+          element={
+            <ProtectedRoute>
+              <SciFiImage />
             </ProtectedRoute>
           }
         />

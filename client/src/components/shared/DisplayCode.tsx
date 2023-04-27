@@ -10,6 +10,8 @@ import {
   BsFillClipboard2CheckFill,
 } from "react-icons/bs";
 import useCopy from "use-copy";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
 
 type Props = {
   timestamp: string;
@@ -25,6 +27,10 @@ function DisplayCode({
   content,
 }: Props) {
   const [copied, copy, setCopied] = useCopy(content);
+
+  React.useEffect(() => {
+    hljs.highlightAll();
+  }, []);
 
   const copyText = () => {
     copy();
@@ -105,10 +111,16 @@ flex-col overflow-y-auto"
 
         {/* CODE OUTPUT */}
         <div className="break-normal">
-          <pre className="p-6 pt-4 h-auto overflow-auto break-normal whitespace-pre-line">
-            <code className="text-gray-300">{content}</code>
+          <pre className="h-auto overflow-auto break-normal whitespace-pre-line">
+            <code
+              className={cn(
+                "hljs bg-inherit text-gray-300",
+                hasJSCode ? "language-javascript" : "sql"
+              )}
+            >
+              {content}
+            </code>
           </pre>
-          {/* <p className="p-6 pt-4 uppercase text-gray-300">{content}</p> */}
         </div>
       </div>
       {!hasExplanation && (
