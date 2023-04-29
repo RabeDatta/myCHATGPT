@@ -24,22 +24,19 @@ export const verifyCookieToken = async (
       return res.status(403).json({ error: "Access Denied" });
     }
     console.log("token 123", token);
-    try {
-      const verified = jwt.verify(token, process.env.JWT_SECRET as string);
-      console.log("verified", verified);
-      req.user = verified;
-      next();
-    } catch (err) {
-      res.status(403).send("Access Denied");
-    }
+
+    const verified = jwt.verify(token, process.env.JWT_SECRET as string);
+    console.log("verified", verified);
+    req.user = verified;
+    next();
   } catch (err: any) {
     if (
       err instanceof jwt.JsonWebTokenError ||
       err instanceof jwt.TokenExpiredError
     ) {
-      res.status(401).send("Unauthorized");
+      res.status(401).json({ error: "Unauthorized" });
     } else {
-      res.status(500).json({ error: err.message });
+      res.redirect("/login");
     }
   }
 };
