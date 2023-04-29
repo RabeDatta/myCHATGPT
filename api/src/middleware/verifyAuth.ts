@@ -16,9 +16,13 @@ export const verifyCookieToken = async (
       return res.status(403).send("Access Denied");
     }
 
-    const verified = jwt.verify(token, process.env.JWT_SECRET as string);
-    req.user = verified;
-    next();
+    try {
+      const verified = jwt.verify(token, process.env.JWT_SECRET as string);
+      req.user = verified;
+      next();
+    } catch (err) {
+      res.status(403).send("Access Denied");
+    }
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
