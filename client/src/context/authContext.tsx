@@ -71,10 +71,24 @@ export const AuthContextProvider = ({
 
   console.log("currentUser", currentUser);
 
+  const checkAuthStatus = async () => {
+    try {
+      const response = await api.get("/auth/auth-status");
+
+      if (response.status === 200) {
+        setCurrentUser(response.data.user);
+        setIsAuthenticated(true);
+      }
+    } catch (error) {
+      setCurrentUser(null);
+      setIsAuthenticated(false);
+      console.log(error);
+    }
+  };
+
   const login = async (loginData: { email: string; password: string }) => {
     const { data } = await api.post("/auth/login", loginData);
-    setCurrentUser(data.user);
-    setIsAuthenticated(true);
+    await checkAuthStatus();
     return data.message;
   };
 
@@ -86,23 +100,6 @@ export const AuthContextProvider = ({
   };
 
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const response = await api.get("/auth/auth-status", {
-          withCredentials: true,
-        });
-
-        if (response.status === 200) {
-          setCurrentUser(response.data.user);
-          setIsAuthenticated(true);
-        }
-      } catch (error) {
-        setCurrentUser(null);
-        setIsAuthenticated(false);
-        console.log(error);
-      }
-    };
-
     checkAuthStatus();
   }, []); // Keep the empty array to run the effect only once when the component mounts
 
