@@ -4,6 +4,7 @@ import express, { Application } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import connectDB from "./config/db";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ const PORT = process.env.PORT ?? 5000;
 const app: Application = express();
 app.use(express.json());
 app.use(express.json({ limit: "30mb" }));
+app.use(cookieParser());
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(helmet());
 app.use(

@@ -52,11 +52,6 @@ const login = async (req: Request, res: Response) => {
     .status(200)
     .json({
       msg: "User logged in successfully",
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-      },
     });
 };
 
@@ -81,8 +76,22 @@ const logout = async (req: Request, res: Response) => {
   }
 };
 
-const userStatus = (req: Request, res: Response) => {
-  res.status(200).json({ isAuthenticated: true, user: req.user });
+const userStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.user;
+
+    const { username, email } = await User.findOne({ _id: id });
+
+    res.status(200).json({
+      isAuthenticated: true,
+      user: {
+        username,
+        email,
+      },
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 };
 
 export { register, login, logout, userStatus };
