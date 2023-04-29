@@ -1,5 +1,6 @@
 export type contextType = {
   currentUser: currentUserType | null;
+  isAuthenticated: boolean;
   login: (logindata: loginData) => Promise<string>;
   logout: () => Promise<void>;
 };
@@ -10,7 +11,6 @@ type loginData = {
 };
 
 export type currentUserType = {
-  id: string;
   username: string;
   email: string;
 };
