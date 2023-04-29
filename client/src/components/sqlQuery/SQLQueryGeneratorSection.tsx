@@ -1,19 +1,16 @@
 import { AuthState } from "@/context/authContext";
 import React, { useEffect } from "react";
 import { BsRobot } from "react-icons/bs";
-import { AiOutlineSend } from "react-icons/ai";
 import { api } from "@/api/apiInstances";
 import TypingAnimation from "@/components/shared/TypingAnimation";
 import { cn } from "@/utils/classNames";
-import { parseDate, timeSince } from "@/utils/relativeDates";
 import TimeAgo from "@/components/shared/TimeAgo";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdZoomInMap, MdZoomOutMap } from "react-icons/md";
 import DisplayCode from "@/components/shared/DisplayCode";
 import BotMessage from "@/components/shared/BotMessage";
-import { Link } from "react-router-dom";
-import { GoPrimitiveDot } from "react-icons/go";
 import ChatHeader from "../shared/ChatHeader";
+import HeaderSection from "../shared/HeaderSection";
 
 function SQLQueryGeneratorSection() {
   const { currentUser } = AuthState();
@@ -22,13 +19,7 @@ function SQLQueryGeneratorSection() {
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [assistantTyping, setAssistantTyping] = React.useState(false);
 
-  const MAX_TEXT_VALUE = 80;
-
-  // const timestamp = new Date().toLocaleTimeString("en-US", {
-  //   hour: "numeric",
-  //   minute: "numeric",
-  //   hour12: true,
-  // });
+  const MAX_TEXT_VALUE = 120;
 
   const timestamp = new Date().toISOString();
 
@@ -42,16 +33,11 @@ function SQLQueryGeneratorSection() {
       }! Welcome to SQL query generator.`,
       timestamp,
     },
-    {
-      role: "assistant",
-      content: "Please enter the text you'd like to generator SQL query for: ",
-      timestamp,
-    },
   ]);
 
   console.log("conversation", conversation);
 
-  const handleClick = async (e: React.MouseEventHandler<HTMLButtonElement>) => {
+  const handleClick = async () => {
     try {
       setConversation((prev) => [
         ...prev,
@@ -67,7 +53,20 @@ function SQLQueryGeneratorSection() {
         setConversation((prev) => [...prev, data.message]);
       }, 1000 * Math.random() + 300);
     } catch (e: any) {
+      setAssistantTyping(false);
+      setConversation((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "The chatbot is currently at maximum capacity and cannot handle any more requests at this time. Please try again later.",
+          timestamp,
+        },
+      ]);
+      setValue("");
       console.log(e);
+    } finally {
+      setAssistantTyping(false);
     }
   };
 
@@ -75,15 +74,11 @@ function SQLQueryGeneratorSection() {
     <div className="bg-gradient-to-br from-green-100 to-white items-center py-7 min-h-[89.7vh]">
       <div className="flex flex-col items-center justify-center px-6 mx-auto max-w-screen-xl gap-8">
         {/* HEADER */}
-        <div>
-          <h1 className="text-4xl text-gray-800 font-bold flex gap-2 items-center">
-            SQL Query Generator
-          </h1>
-          <p className="text-xl text-gray-500 pt-2">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
-            cupiditate numquam incidunt quia tempore, doloribus delectus vel.
-          </p>
-        </div>
+        <HeaderSection
+          title="SQL Query Generator"
+          description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
+            cupiditate numquam incidunt quia tempore, doloribus delectus vel."
+        />
         {/* MESSAGE BOX & TEXTAREA */}
         <div
           className="flex flex-col flex-grow w-full sm:max-w-3xl shadow-xl 
@@ -188,7 +183,7 @@ function SQLQueryGeneratorSection() {
                   : null
               )}
               placeholder="Type your Paragraph here..."
-              maxLength={1200}
+              maxLength={MAX_TEXT_VALUE}
             />
 
             {/* EXPAND ICON */}

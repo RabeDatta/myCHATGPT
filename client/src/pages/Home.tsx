@@ -1,5 +1,5 @@
 import NavBar from "@/components/nav/NavBar";
-import Options from "@/components/options/Options";
+import Menu from "@/components/Menu/Menu";
 import React from "react";
 
 type Props = {};
@@ -9,7 +9,7 @@ const Home = (props: Props) => {
     <div className="">
       <NavBar />
       <div className="antialiased bg-gradient-to-br from-green-100 to-white h-full">
-        <Options />
+        <Menu />
       </div>
     </div>
   );

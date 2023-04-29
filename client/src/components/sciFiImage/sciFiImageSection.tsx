@@ -1,27 +1,21 @@
 import { AuthState } from "@/context/authContext";
 import React, { useEffect } from "react";
 import { BsRobot } from "react-icons/bs";
-import { AiOutlineSend } from "react-icons/ai";
 import { api } from "@/api/apiInstances";
 import TypingAnimation from "@/components/shared/TypingAnimation";
 import { cn } from "@/utils/classNames";
-import { parseDate, timeSince } from "@/utils/relativeDates";
 import TimeAgo from "@/components/shared/TimeAgo";
 import { IoPersonCircleOutline } from "react-icons/io5";
-import { MdZoomInMap, MdZoomOutMap } from "react-icons/md";
-import DisplayCode from "@/components/shared/DisplayCode";
 import BotMessage from "@/components/shared/BotMessage";
-import { Link } from "react-router-dom";
-import { GoPrimitiveDot } from "react-icons/go";
 import ChatHeader from "../shared/ChatHeader";
 import DisplayImg from "./DisplayImg";
+import HeaderSection from "../shared/HeaderSection";
 
 function SciFiImageSection() {
   const { currentUser } = AuthState();
 
   const [value, setValue] = React.useState("");
   const [number, setNumber] = React.useState<number>(1);
-  console.log("number", typeof number);
   const [assistantTyping, setAssistantTyping] = React.useState(false);
 
   const MAX_TEXT_VALUE = 80;
@@ -41,17 +35,14 @@ function SciFiImageSection() {
       role: "assistant",
       content: `Hello${
         currentUser ? `, ${currentUser.username}` : ""
-      }! Welcome to SQL query generator.`,
-      timestamp,
-    },
-    {
-      role: "assistant",
-      content: "Please enter the text you'd like to generator SQL query for: ",
+      }! Welcome to Image generator.`,
       timestamp,
     },
   ]);
 
   console.log("conversation", conversation);
+  const wait = async (time: number) =>
+    new Promise((res) => setTimeout(res, time));
 
   const handleClick = async () => {
     try {
@@ -60,19 +51,32 @@ function SciFiImageSection() {
         { role: "user", content: value, timestamp },
       ]);
       setAssistantTyping(true); // Set assistant typing status to true
+
+      await wait(1000);
+
       const { data } = await api.post("/openAI/scifi-image", {
         value,
         total: number,
       });
-      setValue("");
 
-      // Simulate typing delay using setTimeout
-      setTimeout(() => {
-        setAssistantTyping(false);
-        setConversation((prev) => [...prev, data.message]);
-      }, 1000 * Math.random() + 300);
+      setValue("");
+      setAssistantTyping(false);
+      setConversation((prev) => [...prev, data.message]);
     } catch (e: any) {
+      setAssistantTyping(false);
+      setConversation((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "The chatbot is currently at maximum capacity and cannot handle any more requests at this time. Please try again later.",
+          timestamp,
+        },
+      ]);
+      setValue("");
       console.log(e);
+    } finally {
+      setAssistantTyping(false);
     }
   };
 
@@ -80,15 +84,11 @@ function SciFiImageSection() {
     <div className="bg-gradient-to-br from-green-100 to-white items-center py-7 min-h-[89.7vh]">
       <div className="flex flex-col items-center justify-center px-6 mx-auto max-w-screen-xl gap-8">
         {/* HEADER */}
-        <div>
-          <h1 className="text-4xl text-gray-800 font-bold flex gap-2 items-center">
-            SciFi Image
-          </h1>
-          <p className="text-xl text-gray-500 pt-2">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
-            cupiditate numquam incidunt quia tempore, doloribus delectus vel.
-          </p>
-        </div>
+        <HeaderSection
+          title="SciFi Image"
+          description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
+            cupiditate numquam incidunt quia tempore, doloribus delectus vel."
+        />
         {/* MESSAGE BOX & TEXTAREA */}
         <div
           className="flex flex-col flex-grow w-full sm:max-w-[50rem] shadow-xl 
@@ -148,7 +148,7 @@ function SciFiImageSection() {
                       )}
                       {detail.data && (
                         <DisplayImg
-                          name={detail.name}
+                          name={detail.name || "Photo"}
                           timestamp={detail.timestamp}
                           data={detail.data}
                         />
@@ -203,7 +203,7 @@ function SciFiImageSection() {
                 onChange={(e) => setValue(e.target.value)}
                 className={cn(
                   `flex items-center w-full rounded 
-                px-3 py-2 pr-7 text-lg relative outline-none resize-none transition-[min-height] duration-400 min-h-[4rem]`,
+                px-3 py-2 pr-7 text-lg relative outline-none resize-none transition-[min-height] duration-400 min-h-[4rem] focus:border-green-500`,
 
                   value.length === MAX_TEXT_VALUE
                     ? "border-2 border-red-600"

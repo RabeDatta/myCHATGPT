@@ -10,6 +10,7 @@ import TimeAgo from "@/components/shared/TimeAgo";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdZoomInMap, MdZoomOutMap } from "react-icons/md";
 import ChatHeader from "../shared/ChatHeader";
+import HeaderSection from "../shared/HeaderSection";
 
 function SummarySection() {
   const { currentUser } = AuthState();
@@ -19,12 +20,6 @@ function SummarySection() {
   const [assistantTyping, setAssistantTyping] = React.useState(false);
 
   const MAX_TEXT_VALUE = 1200;
-
-  // const timestamp = new Date().toLocaleTimeString("en-US", {
-  //   hour: "numeric",
-  //   minute: "numeric",
-  //   hour12: true,
-  // });
 
   const timestamp = new Date().toISOString();
 
@@ -47,7 +42,7 @@ function SummarySection() {
 
   console.log(conversation);
 
-  const handleClick = async (e: React.MouseEventHandler<HTMLButtonElement>) => {
+  const handleClick = async () => {
     try {
       setConversation((prev) => [
         ...prev,
@@ -63,7 +58,20 @@ function SummarySection() {
         setConversation((prev) => [...prev, data.message]);
       }, 1000 * Math.random() + 300);
     } catch (e: any) {
+      setAssistantTyping(false);
+      setConversation((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "The chatbot is currently at maximum capacity and cannot handle any more requests at this time. Please try again later.",
+          timestamp,
+        },
+      ]);
+      setValue("");
       console.log(e);
+    } finally {
+      setAssistantTyping(false);
     }
   };
 
@@ -71,15 +79,11 @@ function SummarySection() {
     <div className="bg-gradient-to-br from-green-100 to-white items-center py-7 min-h-[89.7vh]">
       <div className="flex flex-col items-center justify-center px-6 mx-auto max-w-screen-xl gap-8">
         {/* HEADER */}
-        <div>
-          <h1 className="text-4xl text-gray-800 font-bold flex gap-2 items-center">
-            Text summary generator
-          </h1>
-          <p className="text-xl text-gray-500 pt-2">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
-            cupiditate numquam incidunt quia tempore, doloribus delectus vel.
-          </p>
-        </div>
+        <HeaderSection
+          title="Text summary generator"
+          description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
+            cupiditate numquam incidunt quia tempore, doloribus delectus vel."
+        />
         {/* MESSAGE BOX & TEXTAREA */}
         <div
           className="flex flex-col flex-grow w-full sm:max-w-3xl shadow-xl 

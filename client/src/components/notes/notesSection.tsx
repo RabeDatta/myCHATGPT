@@ -1,37 +1,34 @@
 import { AuthState } from "@/context/authContext";
 import React, { useEffect } from "react";
 import { BsRobot } from "react-icons/bs";
-import { AiOutlineSend } from "react-icons/ai";
 import { api } from "@/api/apiInstances";
 import TypingAnimation from "@/components/shared/TypingAnimation";
 import { cn } from "@/utils/classNames";
-import { parseDate, timeSince } from "@/utils/relativeDates";
 import TimeAgo from "@/components/shared/TimeAgo";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdZoomInMap, MdZoomOutMap } from "react-icons/md";
-import { formatData } from "./formatContent";
 import DOMPurify from "dompurify";
 import ChatHeader from "../shared/ChatHeader";
+import HeaderSection from "../shared/HeaderSection";
 
-function KeyPointsSection() {
+function NotesSection() {
   const { currentUser } = AuthState();
 
   const [value, setValue] = React.useState("");
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [assistantTyping, setAssistantTyping] = React.useState(false);
 
-  const MAX_TEXT_VALUE = 120;
-
-  // const timestamp = new Date().toLocaleTimeString("en-US", {
-  //   hour: "numeric",
-  //   minute: "numeric",
-  //   hour12: true,
-  // });
+  const MAX_TEXT_VALUE = 80;
 
   const timestamp = new Date().toISOString();
 
   const [conversation, setConversation] = React.useState<
-    { role: string; content: string; timestamp: string }[]
+    {
+      role: string;
+      content: string;
+      listContent?: boolean;
+      timestamp: string;
+    }[]
   >([
     {
       role: "assistant",
@@ -40,34 +37,43 @@ function KeyPointsSection() {
       }! I help you to generate keys points about topic!`,
       timestamp,
     },
-    {
-      role: "assistant",
-      content: "Please enter a topic you like me to genereate key points : ",
-      timestamp,
-    },
   ]);
 
   console.log("conversation", conversation);
 
-  const handleClick = async (e: React.MouseEventHandler<HTMLButtonElement>) => {
+  const handleClick = async () => {
     try {
       setConversation((prev) => [
         ...prev,
         { role: "user", content: value, timestamp },
       ]);
+
       setAssistantTyping(true); // Set assistant typing status to true
-      const { data } = await api.post("/openAI/studyNotes", { value });
+      const { data } = await api.post("/openAI/wiki", { value });
       setValue("");
 
       // Simulate typing delay using setTimeout
       setTimeout(() => {
         setAssistantTyping(false);
         setConversation((prev) => {
-          return formatData([...prev, data.message]);
+          return [...prev, data.message];
         });
       }, 1000 * Math.random() + 300);
     } catch (e: any) {
+      setAssistantTyping(false);
+      setConversation((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "The chatbot is currently at maximum capacity and cannot handle any more requests at this time. Please try again later.",
+          timestamp,
+        },
+      ]);
+      setValue("");
       console.log(e);
+    } finally {
+      setAssistantTyping(false);
     }
   };
 
@@ -75,15 +81,11 @@ function KeyPointsSection() {
     <div className="bg-gradient-to-br from-green-100 to-white items-center py-7 min-h-[89.7vh]">
       <div className="flex flex-col items-center justify-center px-6 mx-auto max-w-screen-xl gap-8">
         {/* HEADER */}
-        <div>
-          <h1 className="text-4xl text-gray-800 font-bold flex gap-2 items-center">
-            Key Points Generator
-          </h1>
-          <p className="text-xl text-gray-500 pt-2">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
-            cupiditate numquam incidunt quia tempore, doloribus delectus vel.
-          </p>
-        </div>
+        <HeaderSection
+          title=""
+          description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
+            cupiditate numquam incidunt quia tempore, doloribus delectus vel."
+        />
         {/* MESSAGE BOX & TEXTAREA */}
         <div
           className="flex flex-col flex-grow w-full sm:max-w-3xl shadow-xl 
@@ -126,7 +128,7 @@ function KeyPointsSection() {
               ) : (
                 // ASSISTANT MESSAGE
                 <div key={index}>
-                  <div className="flex w-full mt-2 space-x-3 max-w-md">
+                  <div className="flex w-full mt-2 space-x-3 max-w-lg">
                     {/* PROFILE PIC */}
                     <div className="flex-shrink-0 h-10 w-10 rounded-full relative">
                       <div className="absolute w-full h-full top-0 left-1">
@@ -138,9 +140,12 @@ function KeyPointsSection() {
                       <div className="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">
                         {/* <p className="text-sm">{detail.content}</p> */}
                         {detail.listContent ? (
-                          <ol dangerouslySetInnerHTML={sanitizedData()} />
+                          <div
+                            dangerouslySetInnerHTML={sanitizedData()}
+                            className="p-4 pt-1 pb-1 space-y-2"
+                          />
                         ) : (
-                          <p className="text-sm">{detail.content}</p>
+                          <p>{detail.content}</p>
                         )}
                       </div>
 
@@ -232,4 +237,4 @@ function KeyPointsSection() {
   );
 }
 
-export default KeyPointsSection;
+export default NotesSection;

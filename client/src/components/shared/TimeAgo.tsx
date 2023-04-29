@@ -9,7 +9,7 @@ function TimeAgo({ timestamp }: { timestamp: string }) {
     const timePeriod = formatDistanceToNow(date, { includeSeconds: true });
     timeAgo = `${timePeriod} ago`;
   }
-  console.log("timeAgo", timeAgo);
+  // console.log("timeAgo", timeAgo);
   return <span title={timestamp}> {timeAgo}</span>;
 }
 export default TimeAgo;

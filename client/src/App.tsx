@@ -5,10 +5,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AuthState } from "./context/authContext";
 import Summary from "./pages/Summary";
-import KeyPoints from "./pages/KeyPoints";
 import SQLQueryGenerator from "./pages/SQLQueryGenerator";
 import JSConverter from "./pages/JSConverter";
 import SciFiImage from "./pages/SciFiImage";
+import Notes from "./pages/Notes";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -54,10 +54,10 @@ function App() {
           }
         />
         <Route
-          path="/keypoints"
+          path="/notes"
           element={
             <ProtectedRoute>
-              <KeyPoints />
+              <Notes />
             </ProtectedRoute>
           }
         />

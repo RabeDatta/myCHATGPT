@@ -5,7 +5,7 @@ import "highlight.js/styles/github.css";
 import "7.css/dist/gui/tabs.css";
 import "7.css/dist/gui/dropdown.css";
 import "7.css/dist/gui/window.css";
-import "7.css/dist/gui/textbox.css";
+// import "7.css/dist/gui/textbox.css";
 
 type Props = {
   timestamp: string;
