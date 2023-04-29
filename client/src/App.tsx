@@ -9,14 +9,15 @@ import SQLQueryGenerator from "./pages/SQLQueryGenerator";
 import JSConverter from "./pages/JSConverter";
 import SciFiImage from "./pages/SciFiImage";
 import Notes from "./pages/Notes";
+import { Toaster } from "react-hot-toast";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { currentUser } = AuthState();
-  if (!currentUser) {
+  const { isAuthenticated } = AuthState();
+  if (!isAuthenticated) {
     // user is not authenticated
     return <Navigate to="/login" />;
   }
@@ -24,10 +25,11 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 };
 
 function App() {
-  const { currentUser } = AuthState();
+  const { isAuthenticated } = AuthState();
 
   return (
     <div className="App">
+      <Toaster />
       <Routes>
         <Route
           path="/"
@@ -39,11 +41,11 @@ function App() {
         />
         <Route
           path="/login"
-          element={!currentUser ? <Login /> : <Navigate to="/" />}
+          element={!isAuthenticated ? <Login /> : <Navigate to="/" />}
         />
         <Route
           path="/register"
-          element={!currentUser ? <Register /> : <Navigate to="/" />}
+          element={!isAuthenticated ? <Register /> : <Navigate to="/" />}
         />
         <Route
           path="/summary"

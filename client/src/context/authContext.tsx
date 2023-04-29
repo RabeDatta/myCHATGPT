@@ -55,7 +55,7 @@ export const AuthState = () => {
 import { api } from "@/api/apiInstances";
 import { createContext, useContext, useEffect, useState } from "react";
 import { contextType, currentUserType } from "./contextType";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext({} as contextType);
 
@@ -66,6 +66,7 @@ export const AuthContextProvider = ({
 }) => {
   const [currentUser, setCurrentUser] = useState<currentUserType | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation();
 
   const navigate = useNavigate();
 
@@ -78,10 +79,15 @@ export const AuthContextProvider = ({
       if (response.status === 200) {
         setCurrentUser(response.data.user);
         setIsAuthenticated(true);
+      } else {
+        setCurrentUser(null);
+        setIsAuthenticated(false);
+        navigate("/login");
       }
     } catch (error) {
       setCurrentUser(null);
       setIsAuthenticated(false);
+
       console.log(error);
     }
   };
@@ -100,12 +106,13 @@ export const AuthContextProvider = ({
   };
 
   useEffect(() => {
+    console.log("-------------------RUNNING--------------------");
     checkAuthStatus();
-  }, []); // Keep the empty array to run the effect only once when the component mounts
+  }, [location]);
 
   return (
     <AuthContext.Provider
-      value={{ currentUser, isAuthenticated, login, logout }}
+      value={{ currentUser, isAuthenticated, login, logout, checkAuthStatus }}
     >
       {children}
     </AuthContext.Provider>

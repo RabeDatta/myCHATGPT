@@ -11,13 +11,17 @@ import DisplayCode from "@/components/shared/DisplayCode";
 import BotMessage from "@/components/shared/BotMessage";
 import ChatHeader from "../shared/ChatHeader";
 import HeaderSection from "../shared/HeaderSection";
+import { useNavigate } from "react-router-dom";
+import { handleUnauthorized } from "@/utils/handleError";
 
 function SQLQueryGeneratorSection() {
-  const { currentUser } = AuthState();
+  const { currentUser, checkAuthStatus } = AuthState();
+  const navigate = useNavigate();
 
   const [value, setValue] = React.useState("");
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [assistantTyping, setAssistantTyping] = React.useState(false);
+  const [hasError, setHasError] = React.useState(false);
 
   const MAX_TEXT_VALUE = 120;
 
@@ -54,6 +58,7 @@ function SQLQueryGeneratorSection() {
       }, 1000 * Math.random() + 300);
     } catch (e: any) {
       setAssistantTyping(false);
+
       setConversation((prev) => [
         ...prev,
         {
@@ -64,9 +69,10 @@ function SQLQueryGeneratorSection() {
         },
       ]);
       setValue("");
+      const statusCode = e.response.status;
+      console.log(statusCode);
       console.log(e);
-    } finally {
-      setAssistantTyping(false);
+      handleUnauthorized(statusCode, checkAuthStatus, navigate, "login");
     }
   };
 
@@ -171,8 +177,10 @@ function SQLQueryGeneratorSection() {
           </div>
           {/* TEXTAREA SECTION  */}
           <div className="bg-gray-200/60 p-4 relative flex flex-col">
+            {/* TEXTAREA */}
             <textarea
               value={value}
+              disabled={assistantTyping}
               onChange={(e) => setValue(e.target.value)}
               className={cn(
                 `flex items-center min-h-[12.5rem] w-full rounded 
@@ -180,19 +188,22 @@ function SQLQueryGeneratorSection() {
                 isExpanded ? "min-h-[8rem]" : "min-h-[4rem]",
                 value.length === MAX_TEXT_VALUE
                   ? "border-2 border-red-600"
-                  : null
+                  : null,
+                assistantTyping ? "bg-white/40" : null
               )}
-              placeholder="Type your Paragraph here..."
+              placeholder="Type your instructions here..."
               maxLength={MAX_TEXT_VALUE}
             />
 
             {/* EXPAND ICON */}
-            <span
-              className="absolute right-8 top-5 cursor-pointer hover:bg-gray-200 p-2 rounded-full z-50 bg-white"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? <MdZoomOutMap /> : <MdZoomInMap />}
-            </span>
+            {!assistantTyping && (
+              <span
+                className="absolute right-8 top-5 cursor-pointer hover:bg-gray-200 p-2 rounded-full z-50 bg-white"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? <MdZoomOutMap /> : <MdZoomInMap />}
+              </span>
+            )}
 
             {/* SUBMIT BTN */}
             <div className="flex justify-between items-center  mt-2 px-1">
@@ -203,14 +214,15 @@ function SQLQueryGeneratorSection() {
               >
                 {value.length} / {MAX_TEXT_VALUE}
               </span>
+
               <button
                 disabled={!value.length || assistantTyping}
                 onClick={handleClick}
                 className={cn(
-                  `border-2 bg-white z-10
-                  py-1 px-5 rounded-lg border-green-300 text-green-300  
-                 hover:bg-green-300 hover:text-white transition-all`,
-                  assistantTyping ? "cursor-not-allowed " : null
+                  `border-2 bg-green-500 border-none z-10 text-white
+                  py-2 px-5 rounded-lg cursor-pointer
+                 hover:bg-green-500/70 hover:text-white transition-all`,
+                  assistantTyping ? "cursor-not-allowed bg-green-300" : null
                 )}
               >
                 Translate

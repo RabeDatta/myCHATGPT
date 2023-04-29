@@ -1,23 +1,22 @@
 import { AuthState } from "@/context/authContext";
-import React, { useEffect } from "react";
+import React from "react";
 import { BsRobot } from "react-icons/bs";
-import { AiOutlineSend } from "react-icons/ai";
 import { api } from "@/api/apiInstances";
 import TypingAnimation from "@/components/shared/TypingAnimation";
 import { cn } from "@/utils/classNames";
-import { parseDate, timeSince } from "@/utils/relativeDates";
 import TimeAgo from "@/components/shared/TimeAgo";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdZoomInMap, MdZoomOutMap } from "react-icons/md";
 import DisplayCode from "@/components/shared/DisplayCode";
 import BotMessage from "@/components/shared/BotMessage";
-import { Link } from "react-router-dom";
-import { GoPrimitiveDot } from "react-icons/go";
+import { useNavigate } from "react-router-dom";
 import ChatHeader from "../shared/ChatHeader";
 import HeaderSection from "../shared/HeaderSection";
+import { toast } from "react-hot-toast";
+import { handleUnauthorized } from "@/utils/handleError";
 
 function JSConverterSection() {
-  const { currentUser } = AuthState();
+  const { currentUser, checkAuthStatus } = AuthState();
 
   const [value, setValue] = React.useState("");
   const [isExpanded, setIsExpanded] = React.useState(false);
@@ -26,6 +25,7 @@ function JSConverterSection() {
   const MAX_TEXT_VALUE = 600;
 
   const timestamp = new Date().toISOString();
+  const navigate = useNavigate();
 
   const [conversation, setConversation] = React.useState<
     {
@@ -79,9 +79,10 @@ function JSConverterSection() {
         },
       ]);
       setValue("");
+      const statusCode = e.response.status;
+      console.log(statusCode);
       console.log(e);
-    } finally {
-      setAssistantTyping(false);
+      handleUnauthorized(statusCode, checkAuthStatus, navigate, "login");
     }
   };
 

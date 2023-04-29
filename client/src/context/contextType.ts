@@ -1,6 +1,7 @@
 export type contextType = {
   currentUser: currentUserType | null;
   isAuthenticated: boolean;
+  checkAuthStatus: () => Promise<void>;
   login: (logindata: loginData) => Promise<string>;
   logout: () => Promise<void>;
 };

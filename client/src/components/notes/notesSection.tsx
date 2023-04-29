@@ -10,9 +10,12 @@ import { MdZoomInMap, MdZoomOutMap } from "react-icons/md";
 import DOMPurify from "dompurify";
 import ChatHeader from "../shared/ChatHeader";
 import HeaderSection from "../shared/HeaderSection";
+import { handleUnauthorized } from "@/utils/handleError";
+import { useNavigate } from "react-router-dom";
 
 function NotesSection() {
-  const { currentUser } = AuthState();
+  const { currentUser, checkAuthStatus } = AuthState();
+  const navigate = useNavigate();
 
   const [value, setValue] = React.useState("");
   const [isExpanded, setIsExpanded] = React.useState(false);
@@ -71,9 +74,10 @@ function NotesSection() {
         },
       ]);
       setValue("");
+      const statusCode = e.response.status;
+      console.log(statusCode);
       console.log(e);
-    } finally {
-      setAssistantTyping(false);
+      handleUnauthorized(statusCode, checkAuthStatus, navigate, "login");
     }
   };
 
