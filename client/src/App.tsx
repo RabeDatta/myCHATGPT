@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -10,13 +10,19 @@ import JSConverter from "./pages/JSConverter";
 import SciFiImage from "./pages/SciFiImage";
 import Notes from "./pages/Notes";
 import { Toaster } from "react-hot-toast";
+import Loading from "./pages/Loading";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated } = AuthState();
+  const { isAuthenticated, isAuthStatusLoading } = AuthState();
+
+  if (isAuthStatusLoading) {
+    return <Loading />;
+  }
+
   if (!isAuthenticated) {
     // user is not authenticated
     return <Navigate to="/login" />;

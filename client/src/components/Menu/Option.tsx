@@ -21,7 +21,7 @@ export default function Option({
         {title}
       </h2>
       <p>{description}</p>
-      <div className="absolute top-[-35px] right-[-3px] bg-gray-100 group-hover:bg-gray-200/90 p-4 rounded-full">
+      <div className="absolute top-[-35px] right-[-3px] bg-gray-100 group-hover:bg-gray-200/90 p-4 rounded-full z-50">
         <Icon size={60} className="text-green-400" />
       </div>
     </Link>
