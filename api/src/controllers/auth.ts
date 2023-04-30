@@ -4,6 +4,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 
+import NodeCache from "node-cache";
+const userCache = new NodeCache();
+
 const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
@@ -39,15 +42,24 @@ const login = async (req: Request, res: Response) => {
   const user = await User.findOne({ email });
   if (!user) return res.status(400).json({ msg: "User does not exist." });
 
+  const expiresIn = 24 * 60 * 60; // 1 day in seconds
+  const expiration = Math.floor(Date.now() / 1000) + expiresIn;
+
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) return res.status(400).json({ msg: "Invalid credentials." });
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string);
+  const token = jwt.sign(
+    { id: user._id, exp: expiration },
+    process.env.JWT_SECRET as string
+  );
+  const oneDayToMilliseconds = 24 * 60 * 60 * 1000; // 24 hour in milliseconds
+
+  const isProduction = process.env.NODE_ENV === "production";
 
   res
     .cookie("access_token", token, {
       httpOnly: true,
-      maxAge: 3600000,
+      maxAge: oneDayToMilliseconds,
     })
     .status(200)
     .json({
@@ -80,15 +92,32 @@ const userStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.user;
 
-    const { username, email } = await User.findOne({ _id: id });
+    const cacheKey = `userStatus-${id}`;
 
-    res.status(200).json({
+    // Try to get the cached user status
+    const cachedUserStatus = userCache.get(cacheKey);
+
+    if (cachedUserStatus) {
+      // If the user status is cached, return the cached value
+      return res.status(200).json(cachedUserStatus);
+    }
+
+    const user = await User.findOne({ _id: id });
+    const { username, email } = user;
+
+    const userStatusResponse = {
       isAuthenticated: true,
       user: {
         username,
         email,
       },
-    });
+    };
+
+    // Cache the user status with an expiration time (in seconds)
+    const cacheExpiration = 90; // 1m 30s
+    userCache.set(cacheKey, userStatusResponse, cacheExpiration);
+
+    res.status(200).json(userStatusResponse);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
