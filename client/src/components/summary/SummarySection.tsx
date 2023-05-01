@@ -13,6 +13,7 @@ import ChatHeader from "../shared/ChatHeader";
 import HeaderSection from "../shared/HeaderSection";
 import { handleUnauthorized } from "@/utils/handleError";
 import { useNavigate } from "react-router-dom";
+import { SubmitButton } from "../shared/Buttons";
 
 function SummarySection() {
   const { currentUser, checkAuthStatus } = AuthState();
@@ -34,11 +35,6 @@ function SummarySection() {
       content: `Hello${
         currentUser ? `, ${currentUser.username}` : ""
       }! Welcome to the summarization chat. I can help you summarize any text you like. Simply enter your text and I'll provide you with a concise summary.`,
-      timestamp,
-    },
-    {
-      role: "assistant",
-      content: "Please enter the text you'd like me to summarize: ",
       timestamp,
     },
   ]);
@@ -208,18 +204,12 @@ function SummarySection() {
               >
                 {value.length} / {MAX_TEXT_VALUE}
               </span>
-              <button
-                disabled={!value.length || assistantTyping}
-                onClick={handleClick}
-                className={cn(
-                  `border-2 bg-white z-10
-                  py-1 px-5 rounded-lg border-green-300 text-green-300  
-                 hover:bg-green-300 hover:text-white transition-all`,
-                  assistantTyping ? "cursor-not-allowed " : null
-                )}
-              >
-                Send
-              </button>
+              <SubmitButton
+                content="Summerize"
+                handleClick={handleClick}
+                hasValue={Boolean(value.trim())}
+                isAssistantTyping={assistantTyping}
+              />
             </div>
           </div>
         </div>

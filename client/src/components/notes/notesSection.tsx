@@ -12,6 +12,8 @@ import ChatHeader from "../shared/ChatHeader";
 import HeaderSection from "../shared/HeaderSection";
 import { handleUnauthorized } from "@/utils/handleError";
 import { useNavigate } from "react-router-dom";
+import UserMessage from "../shared/UserMessage";
+import AssistantTypingMessage from "../shared/AssistantTypingMessage";
 
 function NotesSection() {
   const { currentUser, checkAuthStatus } = AuthState();
@@ -86,7 +88,7 @@ function NotesSection() {
       <div className="flex flex-col items-center justify-center px-6 mx-auto max-w-screen-xl gap-8">
         {/* HEADER */}
         <HeaderSection
-          title=""
+          title="Notes"
           description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus
             cupiditate numquam incidunt quia tempore, doloribus delectus vel."
         />
@@ -100,35 +102,17 @@ function NotesSection() {
           <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
             {conversation.map((detail, index) => {
               const isUser = detail.role === "user";
-              console.log("current Date: ", detail.timestamp);
+
               const sanitizedData = () => ({
                 __html: DOMPurify.sanitize(detail.content),
               });
 
               return isUser ? (
                 // USER MESSAGE
-                <div key={index}>
-                  <div className="flex w-full mt-2 space-x-3 max-w-xs ml-auto justify-end">
-                    {/* MESSAGE */}
-                    <div>
-                      <div className="bg-blue-600 text-white p-3 rounded-l-lg rounded-br-lg">
-                        <p className="text-sm">{detail.content}</p>
-                      </div>
-                      <div className="flex py-1 items-end justify-end gap-2 w-full">
-                        <span className="text-xs text-gray-500 leading-none">
-                          <TimeAgo timestamp={detail.timestamp} />
-                        </span>
-                        <span className="text-xs text-gray-500 leading-none">
-                          • {currentUser?.username}
-                        </span>
-                      </div>
-                    </div>
-                    {/* PROFILE PIC */}
-                    <div className="flex-shrink-0 h-10 w-10 rounded-full">
-                      <IoPersonCircleOutline size={40} />
-                    </div>
-                  </div>
-                </div>
+                <UserMessage
+                  content={detail.content}
+                  timestamp={detail.timestamp}
+                />
               ) : (
                 // ASSISTANT MESSAGE
                 <div key={index}>
@@ -168,24 +152,7 @@ function NotesSection() {
             })}
 
             {/* LOADING MESSAGE */}
-            {assistantTyping && (
-              <div>
-                <div className="flex w-full mt-2 space-x-3 max-w-xs">
-                  <div className="flex-shrink-0 h-10 w-10 rounded-full relative">
-                    <div className="absolute w-full h-full top-0 left-1">
-                      <BsRobot className="text-3xl text-gray-800" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">
-                      <p className="text-sm">
-                        <TypingAnimation />
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {assistantTyping && <AssistantTypingMessage />}
           </div>
           {/* TEXTAREA SECTION  */}
           <div className="bg-gray-200/60 p-4 relative flex flex-col">

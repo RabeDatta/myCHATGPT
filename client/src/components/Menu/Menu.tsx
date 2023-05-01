@@ -29,7 +29,7 @@ const Options = () => {
         <div className="pt-8 my-4 grid max-w-[60ch] gap-y-10 md:max-w-none md:grid-cols-2 md:grid-rows-2 md:gap-y-12 md:gap-x-8">
           {allOptions.map((item, index) => (
             <Option
-              key={index}
+              key={Math.floor(Math.random() * 100000)}
               path={item.path}
               title={item.title}
               description={item.description}

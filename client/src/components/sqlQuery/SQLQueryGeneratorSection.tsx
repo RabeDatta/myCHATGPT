@@ -13,6 +13,7 @@ import ChatHeader from "../shared/ChatHeader";
 import HeaderSection from "../shared/HeaderSection";
 import { useNavigate } from "react-router-dom";
 import { handleUnauthorized } from "@/utils/handleError";
+import { SubmitButton } from "../shared/Buttons";
 
 function SQLQueryGeneratorSection() {
   const { currentUser, checkAuthStatus } = AuthState();
@@ -215,18 +216,12 @@ function SQLQueryGeneratorSection() {
                 {value.length} / {MAX_TEXT_VALUE}
               </span>
 
-              <button
-                disabled={!value.length || assistantTyping}
-                onClick={handleClick}
-                className={cn(
-                  `border-2 bg-green-500 border-none z-10 text-white
-                  py-2 px-5 rounded-lg cursor-pointer
-                 hover:bg-green-500/70 hover:text-white transition-all`,
-                  assistantTyping ? "cursor-not-allowed bg-green-300" : null
-                )}
-              >
-                Translate
-              </button>
+              <SubmitButton
+                content="Translate"
+                handleClick={handleClick}
+                hasValue={Boolean(value.trim())}
+                isAssistantTyping={assistantTyping}
+              />
             </div>
           </div>
         </div>

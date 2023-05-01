@@ -1,5 +1,5 @@
 import NavBar from "@/components/nav/NavBar";
-import SciFiImageSection from "@/components/sciFiImage/SciFiImageSection";
+import SciFiImageSection from "@/components/sciFiImage/sciFiImageSection";
 
 const SciFiImage = () => {
   return (

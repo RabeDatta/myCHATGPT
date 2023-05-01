@@ -37,6 +37,8 @@ function App() {
     <div className="App">
       <Toaster />
       <Routes>
+        {/* <Route path="*" element={<NotFound />} /> */}
+
         <Route
           path="/"
           element={
