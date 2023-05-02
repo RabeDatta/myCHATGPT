@@ -1,8 +1,7 @@
-//@ts-nocheck
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User from "../models/User";
+import { prisma } from "../config/db";
 
 import NodeCache from "node-cache";
 const userCache = new NodeCache();
@@ -10,12 +9,19 @@ const userCache = new NodeCache();
 const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
+
     console.log({
       username,
       email,
       password,
     });
-    const exisitingEmail = await User.findOne({ email });
+
+    const exisitingEmail = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
     console.log(exisitingEmail);
     if (exisitingEmail) {
       return res.status(400).json({ error: "Email already exists" });
@@ -24,14 +30,17 @@ const register = async (req: Request, res: Response) => {
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const newUser = new User({
-      username,
-      email,
-      password: passwordHash,
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: passwordHash,
+      },
     });
 
-    const savedUser = await newUser.save();
-    res.status(200).json(savedUser);
+    console.log("new users:- ", newUser);
+
+    res.status(201).json({ message: "User created successfully" });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -39,7 +48,13 @@ const register = async (req: Request, res: Response) => {
 
 const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
   if (!user) return res.status(400).json({ msg: "User does not exist." });
 
   const expiresIn = 24 * 60 * 60; // 1 day in seconds
@@ -49,7 +64,7 @@ const login = async (req: Request, res: Response) => {
   if (!isMatch) return res.status(400).json({ msg: "Invalid credentials." });
 
   const token = jwt.sign(
-    { id: user._id, exp: expiration },
+    { id: user.id, exp: expiration },
     process.env.JWT_SECRET as string
   );
   const oneDayToMilliseconds = 24 * 60 * 60 * 1000; // 24 hour in milliseconds
@@ -59,6 +74,7 @@ const login = async (req: Request, res: Response) => {
   res
     .cookie("access_token", token, {
       httpOnly: true,
+      secure: isProduction,
       maxAge: oneDayToMilliseconds,
     })
     .status(200)
@@ -90,6 +106,7 @@ const logout = async (req: Request, res: Response) => {
 
 const userStatus = async (req: Request, res: Response) => {
   try {
+    /* @ts-ignore */
     const { id } = req.user;
 
     const cacheKey = `userStatus-${id}`;
@@ -102,7 +119,23 @@ const userStatus = async (req: Request, res: Response) => {
       return res.status(200).json(cachedUserStatus);
     }
 
-    const user = await User.findOne({ _id: id });
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      return res
+        .clearCookie("access_token", {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        })
+        .status(404)
+        .json({ error: "User does not exist." });
+    }
+
     const { username, email } = user;
 
     const userStatusResponse = {
@@ -118,7 +151,7 @@ const userStatus = async (req: Request, res: Response) => {
     userCache.set(cacheKey, userStatusResponse, cacheExpiration);
 
     res.status(200).json(userStatusResponse);
-  } catch (e) {
+  } catch (e: any) {
     res.status(500).json({ error: e.message });
   }
 };

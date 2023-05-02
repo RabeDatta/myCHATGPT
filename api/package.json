@@ -13,6 +13,7 @@
     "@types/node": "^18.15.11",
     "node-cache": "^5.1.2",
     "nodemon": "^2.0.22",
+    "prisma": "^4.13.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
@@ -20,6 +21,9 @@
     "watch": "tsc -w",
     "bulid": "tsc -w",
     "start": "nodemon --exec ts-node src/index.ts"
+  },
+  "prisma": {
+    "schema": "src/prisma/schema.prisma"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",

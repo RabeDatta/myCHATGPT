@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import express, { Application } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
-import connectDB from "./config/db";
+import { connectDB } from "./config/db";
 import cookieParser from "cookie-parser";
 
 dotenv.config();

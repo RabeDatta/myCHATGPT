@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Configuration, OpenAIApi } from "openai";
-import db from "../config/db";
+// import db from "../config/db";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
